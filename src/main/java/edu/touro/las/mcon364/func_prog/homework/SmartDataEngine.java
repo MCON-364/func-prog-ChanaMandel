@@ -1,7 +1,9 @@
 package edu.touro.las.mcon364.func_prog.homework;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.*;
 
 /**
@@ -44,7 +46,12 @@ public class SmartDataEngine {
             Function<T, R> mapper,
             Consumer<R> consumer
     ) {
-        // TODO
+        for (T item:  input) {
+            if (filter.test(item)) {
+                R result = mapper.apply(item);
+                consumer.accept(result);
+            }
+        }
     }
 
     // ============================================================
@@ -59,8 +66,11 @@ public class SmartDataEngine {
      * - Otherwise return Optional.of(result)
      */
     public static Optional<Double> safeDivide(double a, double b) {
-        // TODO
-        return Optional.empty();
+        if (b == 0){
+            return Optional.empty();
+        } else {
+            return Optional.of(a/b);
+        }
     }
 
     /**
@@ -79,7 +89,9 @@ public class SmartDataEngine {
      */
     public static double processDivision(double a, double b) {
         // TODO
-        return 0;
+        return safeDivide(a,b)
+                .map(result -> result * 10)
+                .orElse(-1.0);
     }
 
     // ============================================================
@@ -109,7 +121,12 @@ public class SmartDataEngine {
         //     default -> ...
         // };
 
-        return null;
+        return switch (input){
+            case Integer i -> i * i;
+            case String s -> s.toUpperCase();
+            case Double d -> Math.round(d);
+            default -> "Unsupported";
+        };
     }
 
     // ============================================================
@@ -147,7 +164,10 @@ public class SmartDataEngine {
 
     public static Function<String, Integer> buildStringLengthPipeline() {
         // TODO
-        return null;
+        Function<String, String> trim = s-> s.trim();
+        Function<String, String> toLowerCase = s-> s.toLowerCase();
+        Function<String, Integer> length = s-> s.length();
+        return trim.andThen(toLowerCase).andThen(length);
     }
 
     // ============================================================
@@ -187,7 +207,17 @@ public class SmartDataEngine {
      */
 
     public static void runScoreProcessor() {
-        // TODO
+        Supplier<Integer> generator = () -> new Random().nextInt(1, 101);
+        Predicate<Integer> filter = n -> n > 50;
+        Function<Integer, String> mapper = n -> "Score: " + n;
+        Consumer<String> printer = s -> System.out.println(s);
+
+        List<Integer> scores = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+             scores.add(generator.get());
+        }
+
+        pipeline(scores, filter, mapper, printer);
     }
 
 }

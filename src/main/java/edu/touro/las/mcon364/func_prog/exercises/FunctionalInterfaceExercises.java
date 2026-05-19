@@ -2,6 +2,8 @@ package edu.touro.las.mcon364.func_prog.exercises;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,8 +41,8 @@ public class FunctionalInterfaceExercises {
      *
      */
     public static Supplier<Integer> currentYearSupplier() {
-      // TODO
-        return null;
+      Supplier<Integer> thisYear = () -> LocalDate.now().getYear();
+        return thisYear;
     }
 
     /**
@@ -48,8 +50,9 @@ public class FunctionalInterfaceExercises {
      * between 1 and 100.
      */
     public static Supplier<Integer> randomScoreSupplier() {
-        // TODO
-        return null;
+        Random random = new Random();
+        Supplier<Integer> randomNumber = () -> random.nextInt(1,100);
+        return randomNumber;
     }
 
     // =========================================================
@@ -61,8 +64,8 @@ public class FunctionalInterfaceExercises {
      * a string is all uppercase.
      */
     public static Predicate<String> isAllUpperCase() {
-        // TODO
-        return null;
+        Predicate<String> isUpperCase = s -> s.equals(s.toUpperCase());
+        return isUpperCase;
     }
 
     /**
@@ -72,8 +75,12 @@ public class FunctionalInterfaceExercises {
      * Hint: consider chaining.
      */
     public static Predicate<Integer> positiveAndDivisibleByFive() {
-        // TODO
-        return null;
+        Predicate<Integer> isDivisibleByFive = i -> i % 5 == 0;
+        Predicate<Integer> positive = i -> i >= 0;
+        Predicate<Integer> positiveAndDivisibleByFive = isDivisibleByFive.and(positive);
+        System.out.println(positiveAndDivisibleByFive.test(25));
+        System.out.println(positiveAndDivisibleByFive.test(-25));
+        return positiveAndDivisibleByFive;
     }
 
     // =========================================================
@@ -87,8 +94,8 @@ public class FunctionalInterfaceExercises {
      * Formula: F = C * 9/5 + 32
      */
     public static Function<Double, Double> celsiusToFahrenheit() {
-        // TODO
-        return null;
+        Function<Double,Double> celsiusToFahrenheit = celsius -> celsius * 9.0/5.0 + 32;
+        return celsiusToFahrenheit;
     }
 
     /**
@@ -97,11 +104,19 @@ public class FunctionalInterfaceExercises {
      *
      * Bonus: Make it case-insensitive.
      */
-    public static Function<String, Integer> countVowels() {
-        // TODO
-        return null;
+    public static Function<String, Integer> countVowels(){
+        Function<String, Integer> countVowels= string -> {
+            string = string.toLowerCase();
+            int vowelCtr = 0;
+            for (char c : string.toCharArray()) {
+                if ("aeiou".indexOf(c) >= 0) {
+                    vowelCtr++;
+                }
+            }
+            return vowelCtr;
+        };
+        return countVowels;
     }
-
     // =========================================================
     // PART 4 — CONSUMERS
     // =========================================================
@@ -113,20 +128,19 @@ public class FunctionalInterfaceExercises {
      * Example output:
      * *** Hello ***
      */
-    public static Consumer<String> starPrinter() {
-        // TODO
-        return null;
+    public static Consumer<String> starPrinter () {
+        Consumer<String> starPrinter = s -> System.out.println("*** " + s + " ***");
+        return starPrinter;
     }
 
     /**
      * 8) Create a Consumer that prints the square
      * of an integer.
      */
-    public static Consumer<Integer> printSquare() {
-        // TODO
-        return null;
+    public static Consumer<Integer> printSquare () {
+        Consumer<Integer> printSquare =number -> System.out.println(number * number);
+        return printSquare;
     }
-
     // =========================================================
     // PART 5 — APPLYING FUNCTIONAL INTERFACES
     // =========================================================
@@ -143,7 +157,16 @@ public class FunctionalInterfaceExercises {
      *  - Print them
      */
     public static void processStrings(List<String> values) {
-        // TODO
+        Predicate<String> filter = string -> string.length() >= 3;
+        Function<String, String> transform = string -> string.toLowerCase();
+        Consumer<String> print = string -> System.out.println(string);
+
+        for (String s : values) {
+            if(filter.test(s)) {
+                String result = transform.apply(s);
+                print.accept(result);
+            }
+        }
     }
 
     /**
@@ -156,6 +179,16 @@ public class FunctionalInterfaceExercises {
      * Print only those above 70.
      */
     public static void generateAndFilterScores() {
-        // TODO
+        Random random = new Random();
+        Supplier<Integer> scoreGenerator = () -> random.nextInt(1,100);
+        Predicate<Integer> isAbove70 = score -> score > 70;
+        Consumer<Integer> scorePrinter = score -> System.out.println(score);
+
+        for(int i = 0; i < 5; i++){
+            Integer score = scoreGenerator.get();
+            if(isAbove70.test(score)) {
+                scorePrinter.accept(score);
+            }
+        }
     }
 }
