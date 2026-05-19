@@ -44,7 +44,12 @@ public class SmartDataEngine {
             Function<T, R> mapper,
             Consumer<R> consumer
     ) {
-        // TODO
+        for (T item:  input) {
+            if (filter.test(item)) {
+                R result = mapper.apply(item);
+                consumer.accept(result);
+            }
+        }
     }
 
     // ============================================================
@@ -59,7 +64,7 @@ public class SmartDataEngine {
      * - Otherwise return Optional.of(result)
      */
     public static Optional<Double> safeDivide(double a, double b) {
-        // TODO
+
         return Optional.empty();
     }
 
@@ -187,7 +192,45 @@ public class SmartDataEngine {
      */
 
     public static void runScoreProcessor() {
-        // TODO
+        // TODOpublic static void runScoreProcessor() {
+        //    Supplier<Integer> generator = () -> new Random().nextInt(1, 101);
+        //    Predicate<Integer> filter = n -> n > 50;
+        //    Function<Integer, String> mapper = n -> "Score: " + n;
+        //    Consumer<String> printer = s -> System.out.println(s);
+        //
+        //    List<Integer> scores = new ArrayList<>();
+        //    for (int i = 0; i < 10; i++) {
+        //        scores.add(generator.get());
+        //    }
+        //
+        //    pipeline(scores, filter, mapper, printer);
+        //}
+        //```
+        //
+        //---
+        //
+        //## What's happening line by line
+        //```
+        //generator  → produces a random number each time .get() is called
+        //filter     → pipeline() will test each number, only passing >50 through
+        //mapper     → pipeline() transforms each passing number into "Score: X"
+        //printer    → pipeline() prints each formatted string
     }
+    public static Function<String, Integer> buildStringLengthPipeline() {
+        Function<String, String> trim = s -> s.trim();
+        Function<String, String> toLowerCase = s -> s.toLowerCase();
+        Function<String, Integer> length = s -> s.length();
+
+        return trim.andThen(toLowerCase).andThen(length);
+    }
+```
+
+        ---
+
+        ## What's happening step by step
+
+    When you call `pipeline.apply("  HELLO  ")`:
+            ```
+            "  HELLO  "  →  trim  →  "HELLO"  →  toLowerCase  →  "hello"  →  length  →  5
 
 }
